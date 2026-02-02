@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мини-отель "Уют" - Бронирование номеров онлайн</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="app">
+        <!-- Верхняя панель с контактами -->
+        <div class="top-bar">
+            <div class="container">
+                <div class="top-bar-content">
+                    <div class="contact-info-top">
+                        <div class="contact-item-top">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>ул. Комфортная, 15, г. Тула</span>
+                        </div>
+                        <div class="contact-item-top">
+                            <i class="fas fa-phone"></i>
+                            <span>+7 999-456-78-90</span>
+                        </div>
+                        <div class="contact-item-top">
+                            <i class="fas fa-envelope"></i>
+                            <span>skyhostel@mail.ru</span>
+                        </div>
+                        <div class="contact-item-top">
+                            <i class="fas fa-clock"></i>
+                            <span>Круглосуточно</span>
+                        </div>
+                    </div>
+                    <div class="top-bar-social">
+                        <a href="#" class="social-top" title="VK"><i class="fab fa-vk"></i></a>
+                        <a href="#" class="social-top" title="Telegram"><i class="fab fa-telegram"></i></a>
+                        <a href="#" class="social-top" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Шапка с навигацией -->
+        <header class="header">
+            <div class="container">
+                <nav class="navbar">
+                    <div class="logo">
+                        <i class="fas fa-hotel logo-icon"></i>
+                        <div class="logo-text">
+                            <h1>SKY <span class="logo-accent">HOSTEL</span></h1>
+                            <p class="tagline">Ваш комфорт — наша забота</p>
+                        </div>
+                    </div>
+                    <div class="nav-links">
+                        <a href="#" @click.prevent="currentView = 'room-list'" 
+                           :class="{ active: currentView === 'room-list' }">
+                            <i class="fas fa-bed"></i> Номера
+                        </a>
+                        <a href="#" @click.prevent="showBookingForm = true" 
+                           v-if="currentView === 'room-page' && selectedRoom" class="btn-book">
+                            <i class="fas fa-calendar-check"></i> Забронировать
+                        </a>
+                        <a href="#" class="btn-phone">
+                            <i class="fas fa-phone-alt"></i> Позвонить
+                        </a>
+                    </div>
+                    <button class="mobile-menu-btn" @click="mobileMenuOpen = !mobileMenuOpen">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </nav>
+
+                <!-- Мобильное меню -->
+                <div class="mobile-menu" v-if="mobileMenuOpen">
+                    <a href="#" @click.prevent="currentView = 'room-list'; mobileMenuOpen = false">
+                        <i class="fas fa-bed"></i> Номера
+                    </a>
+                    <a href="#" @click.prevent="showBookingForm = true; mobileMenuOpen = false" 
+                       v-if="currentView === 'room-page' && selectedRoom">
+                        <i class="fas fa-calendar-check"></i> Забронировать
+                    </a>
+                    <a href="#">
+                        <i class="fas fa-phone-alt"></i> Позвонить
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Hero секция -->
+        <div class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h2 class="hero-title">Насладитесь идеальным отдыхом</h2>
+                    <p class="hero-subtitle">Комфортные номера, уютная атмосфера и отличный сервис</p>
+                    
+                    <!-- Быстрый поиск -->
+                    <div class="quick-search">
+                        <div class="search-card">
+                            <h3><i class="fas fa-search"></i> Найти номер</h3>
+                            <div class="search-fields">
+                                <div class="search-field">
+                                    <label><i class="fas fa-calendar-alt"></i> Заезд</label>
+                                    <input type="date" v-model="quickCheckIn">
+                                </div>
+                                <div class="search-field">
+                                    <label><i class="fas fa-calendar-alt"></i> Выезд</label>
+                                    <input type="date" v-model="quickCheckOut">
+                                </div>
+                                <div class="search-field">
+                                    <label><i class="fas fa-user-friends"></i> Гости</label>
+                                    <select v-model="quickGuests">
+                                        <option>1 гость</option>
+                                        <option>2 гостя</option>
+                                        <option>3 гостя</option>
+                                        <option>4 гостя</option>
+                                    </select>
+                                </div>
+                                <button class="btn-search" @click="applyQuickSearch">
+                                    <i class="fas fa-search"></i> Найти
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Иконки преимуществ в одну линию -->
+                    <div class="hero-features-inline">
+                        <div class="feature-inline">
+                            <i class="fas fa-wifi"></i>
+                            <span>Бесплатный Wi-Fi</span>
+                        </div>
+                        <div class="feature-inline">
+                            <i class="fas fa-parking"></i>
+                            <span>Бесплатная парковка</span>
+                        </div>
+                        <div class="feature-inline">
+                            <i class="fas fa-coffee"></i>
+                            <span>Завтрак включен</span>
+                        </div>
+                        <div class="feature-inline">
+                            <i class="fas fa-concierge-bell"></i>
+                            <span>Круглосуточная стойка</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Основной контент -->
+        <main class="main-content">
+            <div class="container">
+                <!-- Уведомления -->
+                <div v-if="notification.show" class="notification" :class="notification.type">
+                    <span>{{ notification.message }}</span>
+                    <button @click="notification.show = false" class="close-notification">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+
+                <!-- Компонент списка номеров (без календаря) -->
+                <room-list 
+                    v-if="currentView === 'room-list'"
+                    :rooms="filteredRooms"
+                    @select-room="selectRoom">
+                </room-list>
+
+                <!-- Компонент страницы номера -->
+                <room-page 
+                    v-if="currentView === 'room-page' && selectedRoom"
+                    :room="selectedRoom"
+                    :check-in-date="checkInDate"
+                    :check-out-date="checkOutDate"
+                    @back="currentView = 'room-list'"
+                    @book="showBookingForm = true">
+                </room-page>
+            </div>
+        </main>
+
+        <!-- Модальное окно бронирования -->
+        <div class="modal-overlay" v-if="showBookingForm && selectedRoom" @click.self="showBookingForm = false">
+            <div class="modal">
+                <booking-form
+                    :room="selectedRoom"
+                    :check-in-date="checkInDate"
+                    :check-out-date="checkOutDate"
+                    @submit-booking="submitBooking"
+                    @close="showBookingForm = false">
+                </booking-form>
+            </div>
+        </div>
+
+        <!-- Футер -->
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-section">
+                        <div class="footer-logo">
+                            <i class="fas fa-hotel"></i>
+                            <div>
+                                <h3>SKY HOSTEL</h3>
+                                <p>Комфортное проживание по доступным ценам</p>
+                            </div>
+                        </div>
+                        <p>Мы создаем уютную атмосферу для вашего идеального отдыха.</p>
+                    </div>
+                    
+                    <div class="footer-section">
+                        <h4>Быстрые ссылки</h4>
+                        <ul class="footer-links">
+                            <li><a href="#" @click.prevent="currentView = 'room-list'">Все номера</a></li>
+                            <li><a href="#">Условия бронирования</a></li>
+                            <li><a href="#">Отзывы гостей</a></li>
+                            <li><a href="#">Контакты</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-section">
+                        <h4>Контакты</h4>
+                        <div class="footer-contact">
+                            <p><i class="fas fa-map-marker-alt"></i> ул. Комфортная, 15</p>
+                            <p><i class="fas fa-phone"></i> +7-999-456-78-90</p>
+                            <p><i class="fas fa-envelope"></i> skyhostel@mail.ru</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="footer-bottom">
+                    <p>&copy; 2026 SKY HOSTEL • Разработано: Кирилл Васильев • Практика Vue.js</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
